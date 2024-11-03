@@ -43,6 +43,7 @@
         </div>
 
         <div class="relative">
+            <h2>Video 1</h2>
             <img src="https://via.placeholder.com/300x200" alt="Video Thumbnail"
                 class="w-full h-48 object-cover rounded-lg">
             <button @click="openVideoModal('video2')"
