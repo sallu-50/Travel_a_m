@@ -3,6 +3,7 @@
 use App\Http\Controllers\HajjController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\UmrahController;
 use App\Http\Controllers\WorkController;
@@ -34,3 +35,7 @@ Route::post('/register/store', [RegistrationController::class, 'store'])->name('
 Route::get('/verification', function () {
     return view('verification'); // matches verification.blade.php in views folder
 });
+
+
+
+Route::get('download/booking/pdf/', [PDFController::class, 'BookingPDF'])->name('download.booking.pdf');

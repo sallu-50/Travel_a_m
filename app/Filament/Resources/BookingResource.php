@@ -10,7 +10,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class BookingResource extends Resource
 {
@@ -29,7 +30,7 @@ class BookingResource extends Resource
                     ->required()
                     ->numeric()
                     ->minValue(0)
-                    ->disabled(fn($record) => $record && $record->invoice_downloaded), // Disable if invoice downloaded
+                    ->disabled(fn($record) => $record && $record->invoice_downloaded),
             ]);
     }
 
@@ -46,35 +47,50 @@ class BookingResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->invoice_downloaded),
 
-                // Add Download Invoice Action
-                Tables\Actions\Action::make('downloadInvoice')
-                    ->label('Download Invoice')
-                    ->icon(asset('icons/download.svg')) // Custom SVG path
+                Tables\Actions\Action::make('sendData')
+                    ->label('Download PDF')
                     ->action(function ($record) {
-                        return static::downloadInvoice($record->id);
+                        session()->flash('booking_id', $record->id);
+                        return redirect()->route('download.booking.pdf');
                     })
                     ->requiresConfirmation()
-                    ->hidden(fn($record) => $record->invoice_downloaded), // Hide if invoice already downloaded
+                    ->modalHeading('Confirm Action')
+                    ->hidden(fn($record) => $record->invoice_downloaded),
+
+
+                // Tables\Actions\Action::make('downloadInvoice')
+                //     ->label('Download Invoice')
+                //     ->icon(asset('icons/download.svg'))
+                //     ->action(function ($record) {
+                //         return static::downloadInvoice($record->id);
+                //     })
+                //     ->requiresConfirmation()
+                //     ->hidden(fn($record) => $record->invoice_downloaded),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 
-    public static function downloadInvoice($bookingId)
-    {
-        $booking = Booking::with('registration')->findOrFail($bookingId);
+    // public static function downloadInvoice($bookingId)
+    // {
+    //     $booking = Booking::with('registration')->findOrFail($bookingId);
 
-        // Generate PDF using a package like DomPDF or Snappy
-        $pdf = PDF::loadView('invoices.invoice', compact('booking'));
+    //     // Log the booking data for debugging
+    //     Log::info(json_encode($booking->toArray(), JSON_UNESCAPED_UNICODE));
 
-        // Update the booking to mark that the invoice has been downloaded
-        $booking->update(['invoice_downloaded' => true]);
+    //     // Load the view with UTF-8 encoding for dompdf
+    //     $pdf = Pdf::loadView('invoices.invoice', compact('booking'))
+    //         ->setPaper('A4', 'portrait')
+    //         ->setOptions(['isHtml5ParserEnabled' => true, 'isUnicode' => true]);
 
-        return $pdf->download('invoice-' . $bookingId . '.pdf');
-    }
+    //     // Update the booking to mark that the invoice has been downloaded
+    //     $booking->update(['invoice_downloaded' => true]);
+
+    //     return $pdf->download('invoice-' . $bookingId . '.pdf');
+    // }
 
     public static function getRelations(): array
     {

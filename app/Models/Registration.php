@@ -22,4 +22,13 @@ class Registration extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function ClintTask()
+    {
+        return $this->hasMany(ClientTask::class);
+    }
+    public function expenses()
+    {
+        return $this->hasOne(Expense::class);
+    }
 }
