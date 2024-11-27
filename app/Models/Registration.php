@@ -15,7 +15,9 @@ class Registration extends Model
         'passport',
         'type',
         'status',
+        'amount', // Add this
     ];
+
 
 
     public function booking()

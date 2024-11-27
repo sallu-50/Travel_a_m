@@ -6,6 +6,7 @@ use App\Filament\Resources\ApplicationResource\Pages;
 use App\Models\Registration;
 use App\Models\User;
 use App\Filament\Resources\ApplicationResource\RelationManagers;
+
 use App\Models\Application;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs\Tab;
@@ -21,6 +22,9 @@ class ApplicationResource extends Resource
     protected static ?string $model = Registration::class; // Set model to Registration
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'Applications';
+
+
+
 
     public static function form(Forms\Form $form): Forms\Form
     {
@@ -64,11 +68,14 @@ class ApplicationResource extends Resource
                     ->default('pending')
                     ->label("Status")
                     ->required(),
-                // ->visible(auth()->user()->isAdmin()) // Optional: restrict field visibility based on user role
-
+                Forms\Components\TextInput::make('amount')
+                    ->numeric()
+                    ->label('Amount'),
+                // ->required()
+                // ->visible(fn(callable $get) => $get('status') === 'approved') // Show only when status is approved
+                // ->helperText('Provide the amount if approving the application.'),
             ]);
     }
-
 
     public static function table(Table $table): Table
     {
@@ -98,17 +105,8 @@ class ApplicationResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->label('Registration Type')
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label('Status')
-                    ->colors([
-                        'yellow' => 'pending',
-                        'green' => 'approved',
-                        'red' => 'canceled',
-                    ])
-                    ->formatStateUsing(function (string $state): string {
-                        return ucfirst($state);
-                    }),
-                // for status update
+
+
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
                     ->colors([
@@ -123,9 +121,8 @@ class ApplicationResource extends Resource
 
 
             ])
-
             ->filters([
-                //
+                // Define filters if necessary
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -140,7 +137,7 @@ class ApplicationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // Add any relationships if necessary
         ];
     }
 

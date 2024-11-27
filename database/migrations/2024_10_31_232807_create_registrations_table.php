@@ -20,9 +20,11 @@ return new class extends Migration
             $table->string('passport');
             $table->enum('type', ['hajj', 'umrah', 'work']);
             $table->enum('status', ['pending', 'approved', 'canceled'])->default('pending');
+            $table->decimal('amount', 10, 2)->nullable(); // Add amount field, nullable for non-approved records
             $table->timestamps();
         });
     }
+
 
 
     /**
