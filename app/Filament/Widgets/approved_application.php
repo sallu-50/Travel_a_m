@@ -61,6 +61,15 @@ class approved_application extends BaseWidget
                     ->label('Amount')
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('fingerprint_date')
+                    ->label('Fingerprint Date')
+                    ->date()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('medical_date')
+                    ->label('Medical Date')
+                    ->date()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Registration Date')
@@ -68,7 +77,17 @@ class approved_application extends BaseWidget
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('edit')
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil')
+                    ->url(fn(Registration $record): string => url('/admin/applications/' . $record->id . '/edit'))
+                    ->openUrlInNewTab(false),
             ]);
+        // ->actions([
+        //     Tables\Actions\Action::make('edit')
+        //         ->label('Edit')
+        //         ->url(fn (Registration $record): string => route('filament.resources.applications.edit', $record)) // Update the route accordingly
+        //         ->icon('heroicon-o-pencil-alt'),
+        // ]);
     }
 }

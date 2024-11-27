@@ -74,6 +74,16 @@ class ApplicationResource extends Resource
                 // ->required()
                 // ->visible(fn(callable $get) => $get('status') === 'approved') // Show only when status is approved
                 // ->helperText('Provide the amount if approving the application.'),
+
+                Forms\Components\DatePicker::make('fingerprint_date')
+                    ->label('Fingerprint Date')
+                    ->nullable()
+                    ->visible(fn() => auth()->user()->hasRole('operation')),
+
+                Forms\Components\DatePicker::make('medical_date')
+                    ->label('Medical Date')
+                    ->nullable()
+                    ->visible(fn() => auth()->user()->hasRole('operation')),
             ]);
     }
 
