@@ -18,6 +18,8 @@ class Registration extends Model
         'amount',
         'fingerprint_date',
         'medical_date',
+        'visa_date',
+        'total_Cost',
     ];
 
 

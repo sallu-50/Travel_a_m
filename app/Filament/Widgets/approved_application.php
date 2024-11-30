@@ -71,6 +71,15 @@ class approved_application extends BaseWidget
                     ->date()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('visa_date')
+                    ->label('Visa Date')
+                    ->date()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('total_Cost')
+                    ->label('Total Cost')
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Registration Date')
                     ->date()

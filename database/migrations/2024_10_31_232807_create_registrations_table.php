@@ -23,6 +23,9 @@ return new class extends Migration
             $table->decimal('amount', 10, 2)->nullable();
             $table->date('fingerprint_date')->nullable();
             $table->date('medical_date')->nullable();
+            $table->date('visa_date')->nullable();
+
+            $table->decimal('total_Cost', 10, 2)->nullable();
             $table->timestamps();
         });
     }

@@ -84,6 +84,21 @@ class ApplicationResource extends Resource
                     ->label('Medical Date')
                     ->nullable()
                     ->visible(fn() => auth()->user()->hasRole('operation')),
+                Forms\Components\DatePicker::make('visa_date')
+                    ->label('Visa Date')
+                    ->nullable()
+                    ->visible(fn() => auth()->user()->hasRole('super_admin')),
+
+                Forms\Components\TextInput::make('total_Cost')
+                    ->numeric()
+                    ->label('total_Cost'),
+
+                // Forms\Components\TextInput::make('total_Cost')
+                //     ->label('Total Cost Amount')
+                //     ->numeric() // Ensures only numeric input
+                //     ->nullable()
+                //     ->visible(fn() => auth()->user()->hasRole('super_admin')),
+
             ]);
     }
 
