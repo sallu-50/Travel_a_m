@@ -2,10 +2,14 @@
 
 namespace App\Filament\Widgets;
 
+
 use App\Models\Registration;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\Action as TableAction;
+use Filament\Forms;
 
 class all_application extends BaseWidget
 {
@@ -57,10 +61,39 @@ class all_application extends BaseWidget
                     ->iconPosition('before') // Show the icon before the status text
                     ->formatStateUsing(fn(string $state): string => ucfirst($state)) // Capitalize the status text
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Registration Date')
                     ->date()
                     ->sortable(),
+            ])
+
+            ->actions([
+                TableAction::make('approve')
+                    ->label('Approve')
+                    ->color('success')
+                    ->icon('heroicon-s-check-circle')
+                    ->requiresConfirmation()
+                    ->visible(fn(Registration $record) => $record->status === 'pending')
+                    ->form([
+                        Forms\Components\TextInput::make('amount')
+                            ->label('Amount')
+                            ->required(),
+                    ])
+                    ->action(function (array $data, Registration $record) {
+                        $record->update([
+                            'status' => 'approved',
+                            'amount' => $data['amount'],
+                        ]);
+                        Notification::make()
+                            ->success()
+                            ->title('Application Approved')
+                            ->send();
+                    }),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 }

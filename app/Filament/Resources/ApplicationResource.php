@@ -11,8 +11,10 @@ use App\Models\Application;
 use Filament\Forms;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -72,7 +74,7 @@ class ApplicationResource extends Resource
                     ->numeric()
                     ->label('Amount'),
                 // ->required()
-                // ->visible(fn(callable $get) => $get('status') === 'approved') // Show only when status is approved
+                // ->visible(fn(callable $get) => $get('status') === 'approved')
                 // ->helperText('Provide the amount if approving the application.'),
 
                 Forms\Components\DatePicker::make('fingerprint_date')
@@ -91,7 +93,8 @@ class ApplicationResource extends Resource
 
                 Forms\Components\TextInput::make('total_Cost')
                     ->numeric()
-                    ->label('total_Cost'),
+                    ->label('total_Cost')
+                    ->visible(fn() => auth()->user()->hasRole('super_admin')),
 
                 // Forms\Components\TextInput::make('total_Cost')
                 //     ->label('Total Cost Amount')
@@ -132,8 +135,9 @@ class ApplicationResource extends Resource
                     ->sortable(),
 
 
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Status')
+                    ->badge()
                     ->colors([
                         'yellow' => 'pending',
                         'green' => 'approved',
@@ -150,6 +154,29 @@ class ApplicationResource extends Resource
                 // Define filters if necessary
             ])
             ->actions([
+
+                Action::make('approve')
+                    ->label('Approve')
+                    ->color('success')
+                    ->icon('heroicon-s-check-circle')
+                    ->requiresConfirmation()
+                    ->visible(fn(Registration $record) => $record->status === 'pending')
+                    ->form([
+                        Forms\Components\TextInput::make('amount')
+                            ->label('Amount')
+                            ->required(),
+                    ])
+
+                    ->action(function (array $data, Registration $record) {
+                        $record->update([
+                            'status' => 'approved',
+                            'amount' => $data['amount'],
+                        ]);
+                        Notification::make()
+                            ->success()
+                            ->title('Application Approved')
+                            ->send();
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
